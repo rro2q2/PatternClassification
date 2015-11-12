@@ -1,12 +1,11 @@
 __author__ = 'stamaimer'
 
-import seaborn
 import argparse
-import collections
 import numpy as np
-import pandas as pd
+from pylab import *
 import scipy.stats as stats
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 
 def gen_mean(mean):
@@ -48,15 +47,30 @@ if __name__ == "__main__":
 
     samples = np.random.multivariate_normal(mean, cov, args.size)
 
-    print samples.tolist()
+    x, y = samples.T
 
-    # print collections.Counter(samples.tolist())
+    # print samples
+    #
+    # samples = sorted(samples)
+    #
+    # pdf = stats.norm.pdf(samples, mean, cov)
+    #
+    # plt.plot(samples, pdf, "-o")
+    #
+    # plt.show()
 
-    samples = sorted(samples)
+    rx = np.linspace(np.amin(x), np.amax(x), 200)
+    ry = np.linspace(np.amin(y), np.amax(y), 200)
 
-    pdf = stats.norm.pdf(samples, mean, cov)
+    X, Y = np.meshgrid(rx, ry)
 
-    plt.plot(samples, pdf, "-o")
+    Z = bivariate_normal(X, Y)
+
+    figure = plt.figure()
+
+    axes = figure.add_subplot(111, projection='3d')
+
+    axes.plot_surface(X, Y, Z, cmap="binary")
 
     plt.show()
 
