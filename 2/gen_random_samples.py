@@ -1,7 +1,11 @@
 __author__ = 'stamaimer'
 
+import seaborn
 import argparse
+import collections
 import numpy as np
+import pandas as pd
+import scipy.stats as stats
 import matplotlib.pyplot as plt
 
 
@@ -44,6 +48,16 @@ if __name__ == "__main__":
 
     samples = np.random.multivariate_normal(mean, cov, args.size)
 
-    print samples
+    print samples.tolist()
+
+    # print collections.Counter(samples.tolist())
+
+    samples = sorted(samples)
+
+    pdf = stats.norm.pdf(samples, mean, cov)
+
+    plt.plot(samples, pdf, "-o")
+
+    plt.show()
 
 

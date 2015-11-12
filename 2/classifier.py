@@ -61,12 +61,12 @@ def classifier1(x, class1, class2):
     mean1 = np.array([np.mean(class1[:, 0])])
     mean2 = np.array([np.mean(class2[:, 0])])
 
-    # print mean1, mean2
+    #print mean1, mean2
 
     cov1 = np.array([[np.cov([class1[:, 0]])]])
     cov2 = np.array([[np.cov([class2[:, 0]])]])
 
-    # print cov1, cov2
+    #print cov1, cov2
 
     discriminant_function1 = gdf.gen_discriminant_function_of_normal_distribution(mean1, cov1, prior1)
     discriminant_function2 = gdf.gen_discriminant_function_of_normal_distribution(mean2, cov2, prior2)
@@ -127,12 +127,12 @@ def classifier2(x, class1, class2):
     mean1 = np.mean(class1[:, 0:2], axis=0)
     mean2 = np.mean(class2[:, 0:2], axis=0)
 
-    # print mean1, mean2
+    #print mean1, mean2
 
     cov1 = np.cov([class1[:, 0], class1[:, 1]])
     cov2 = np.cov([class2[:, 0], class2[:, 1]])
 
-    # print cov1, cov2
+    #print cov1, cov2
 
     discriminant_function1 = gdf.gen_discriminant_function_of_normal_distribution(mean1, cov1, prior1)
     discriminant_function2 = gdf.gen_discriminant_function_of_normal_distribution(mean2, cov2, prior2)
@@ -192,12 +192,12 @@ def classifier3(x, class1, class2):
     mean1 = np.mean(class1[:, 0:3], axis=0)
     mean2 = np.mean(class2[:, 0:3], axis=0)
 
-    # print mean1, mean2
+    #print mean1, mean2
 
     cov1 = np.cov([class1[:, 0], class1[:, 1], class1[:, 2]])
     cov2 = np.cov([class2[:, 0], class2[:, 1], class2[:, 2]])
 
-    # print cov1, cov2
+    #print cov1, cov2
 
     discriminant_function1 = gdf.gen_discriminant_function_of_normal_distribution(mean1, cov1, prior1)
     discriminant_function2 = gdf.gen_discriminant_function_of_normal_distribution(mean2, cov2, prior2)
