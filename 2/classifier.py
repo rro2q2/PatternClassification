@@ -1,7 +1,10 @@
 __author__ = 'stamaimer'
 
 import numpy as np
+from pylab import *
+import matplotlib.pyplot as plt
 import gen_discriminant_function as gdf
+from mpl_toolkits.mplot3d import Axes3D
 
 data1 = [[-5.01, -8.12, -3.68],
          [-5.43, -3.48, -3.54],
@@ -53,73 +56,96 @@ def bhattacharyya(prior1, prior2, mean1, mean2, cov1, cov2):
     return p
 
 
-def classifier1(x, class1, class2):
+def classifier1(x, class1, class2, column):
 
     prior1 = 0.5
     prior2 = 0.5
 
-    mean1 = np.array([np.mean(class1[:, 0])])
-    mean2 = np.array([np.mean(class2[:, 0])])
+    mean1 = np.array([np.mean(class1[:, column])])
+    mean2 = np.array([np.mean(class2[:, column])])
 
     # print mean1, mean2
 
-    cov1 = np.array([[np.cov([class1[:, 0]])]])
-    cov2 = np.array([[np.cov([class2[:, 0]])]])
+    cov1 = np.array([[np.cov([class1[:, column]])]])
+    cov2 = np.array([[np.cov([class2[:, column]])]])
 
     # print cov1, cov2
 
     discriminant_function1 = gdf.gen_discriminant_function_of_normal_distribution(mean1, cov1, prior1)
     discriminant_function2 = gdf.gen_discriminant_function_of_normal_distribution(mean2, cov2, prior2)
 
+    figure = plt.figure()
+
+    X = np.linspace(-100, 100, 100)
+
+    y1 = [discriminant_function1(np.array([ele])) for ele in X]
+
+    y2 = [discriminant_function2(np.array([ele])) for ele in X]
+
+    plt.plot(X, y1)
+
+    plt.plot(X, y2)
+
+    plt.savefig("plot/classifier1" + str(column) + ".png")
+
     if discriminant_function1(x) > discriminant_function2(x):
 
-        print x, "class 1"
+        # print x, "class 1"
 
         return 1, bhattacharyya(prior1, prior2, mean1, mean2, cov1, cov2)
 
     elif discriminant_function1(x) < discriminant_function2(x):
 
-        print x, "class 2"
+        # print x, "class 2"
 
         return 2, bhattacharyya(prior1, prior2, mean1, mean2, cov1, cov2)
 
     else:
 
-        print x, "unsure"
+        # print x, "unsure"
 
         return 0, bhattacharyya(prior1, prior2, mean1, mean2, cov1, cov2)
 
 
-count = 0
+for column in xrange(3):
 
-for i in [ele[0] for ele in data1]:
+    count = 0
 
-    c, p = classifier1(np.array([i]), data1, data2)
+    for i in [ele[column] for ele in data1]:
 
-    if c != 1:
+        c, p = classifier1(np.array([i]), data1, data2, column)
 
-        count += 1
+        if c != 1:
 
-# print "=The bhattacharyya is %f=" % p
-#
-# print "==============================="
+            count += 1
 
-for i in [ele[0] for ele in data2]:
+    # print "=The bhattacharyya is %f=" % p
+    #
+    # print "==============================="
 
-    c, p = classifier1(np.array([i]), data1, data2)
+    for i in [ele[column] for ele in data2]:
 
-    if c != 2:
+        c, p = classifier1(np.array([i]), data1, data2, column)
 
-        count += 1
+        if c != 2:
 
-print "The empirical training error is %f" % (float(count) / 20)
+            count += 1
 
-print "The bhattacharyya is %f" % p
+    print "The empirical training error is %f" % (float(count) / 20)
 
-print "========================================"
+    print "The bhattacharyya is %f" % p
+
+    print "========================================"
 
 
-def classifier2(x, class1, class2):
+def classifier2(x, class1, class2, column):
+
+    index = [0, 1, 2]
+
+    index.remove(column)
+
+    class1 = class1[:, index]
+    class2 = class2[:, index]
 
     prior1 = 0.5
     prior2 = 0.5
@@ -137,51 +163,72 @@ def classifier2(x, class1, class2):
     discriminant_function1 = gdf.gen_discriminant_function_of_normal_distribution(mean1, cov1, prior1)
     discriminant_function2 = gdf.gen_discriminant_function_of_normal_distribution(mean2, cov2, prior2)
 
+    rx = np.linspace(-100, 100, 100)
+    ry = np.linspace(-100, 100, 100)
+
+    X, Y = np.meshgrid(rx, ry)
+
+    z1 = [discriminant_function1(np.array([elex, eley])) for elex, eley in zip(X[0], Y[:, 0])]
+
+    z2 = [discriminant_function2(np.array([elex, eley])) for elex, eley in zip(X[0], Y[:, 0])]
+
+    figure = plt.figure()
+
+    axes = figure.add_subplot(111, projection='3d')
+
+    axes.plot_surface(X, Y, z1, cmap="Greys")
+
+    axes.plot_surface(X, Y, z2, cmap="Blues")
+
+    plt.savefig("plot/classifier2" + str(column) + ".png")
+
     if discriminant_function1(x) > discriminant_function2(x):
 
-        print x, "class 1"
+        # print x, "class 1"
 
         return 1, bhattacharyya(prior1, prior2, mean1, mean2, cov1, cov2)
 
     elif discriminant_function1(x) < discriminant_function2(x):
 
-        print x, "class 2"
+        # print x, "class 2"
 
         return 2, bhattacharyya(prior1, prior2, mean1, mean2, cov1, cov2)
 
     else:
 
-        print x, "unsure"
+        # print x, "unsure"
 
         return 0, bhattacharyya(prior1, prior2, mean1, mean2, cov1, cov2)
 
-count = 0
+for column in xrange(3):
 
-for i in [ele[0:2] for ele in data1]:
+    count = 0
 
-    c, p = classifier2(np.array(i), data1, data2)
+    for i in [np.delete(ele, column) for ele in data1]:
 
-    if c != 1:
+        c, p = classifier2(np.array(i), data1, data2, column)
 
-        count += 1
+        if c != 1:
 
-# print "=The bhattacharyya is %f=" % p
-#
-# print "==============================="
+            count += 1
 
-for i in [ele[0:2] for ele in data2]:
+    # print "=The bhattacharyya is %f=" % p
+    #
+    # print "==============================="
 
-    c, p = classifier2(np.array(i), data1, data2)
+    for i in [np.delete(ele, column) for ele in data2]:
 
-    if c != 2:
+        c, p = classifier2(np.array(i), data1, data2, column)
 
-        count += 1
+        if c != 2:
 
-print "The empirical training error is %f" % (float(count) / 20)
+            count += 1
 
-print "The bhattacharyya is %f" % p
+    print "The empirical training error is %f" % (float(count) / 20)
 
-print "========================================"
+    print "The bhattacharyya is %f" % p
+
+    print "========================================"
 
 
 def classifier3(x, class1, class2):
@@ -204,19 +251,19 @@ def classifier3(x, class1, class2):
 
     if discriminant_function1(x) > discriminant_function2(x):
 
-        print x, "class 1"
+        # print x, "class 1"
 
         return 1, bhattacharyya(prior1, prior2, mean1, mean2, cov1, cov2)
 
     elif discriminant_function1(x) < discriminant_function2(x):
 
-        print x, "class 2"
+        # print x, "class 2"
 
         return 2, bhattacharyya(prior1, prior2, mean1, mean2, cov1, cov2)
 
     else:
 
-        print x, "unsure"
+        # print x, "unsure"
 
         return 0, bhattacharyya(prior1, prior2, mean1, mean2, cov1, cov2)
 
