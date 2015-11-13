@@ -29,6 +29,48 @@ def gen_cov(cov):
 
     return tmp
 
+
+def gen_1d_normal_plot(mean, cov, size):
+
+    samples = np.random.multivariate_normal(mean, cov, size)
+
+    samples = sorted(samples)
+
+    pdf = stats.norm.pdf(samples, mean, cov)
+
+    plt.plot(samples, pdf, "-o")
+
+    plt.show()
+
+
+def gen_2d_normal_plot(mean, cov, size):
+
+    samples = np.random.multivariate_normal(mean, cov, size)
+
+    x, y = samples.T
+
+    xrange = np.linspace(np.amin(x), np.amax(x), 200)
+    yrange = np.linspace(np.amin(y), np.amax(y), 200)
+
+    X, Y = np.meshgrid(xrange, yrange)
+
+    Z = bivariate_normal(X, Y)
+
+    figure = plt.figure()
+
+    axes = figure.add_subplot(111, projection='3d')
+
+    axes.plot_surface(X, Y, Z, cmap="GnBu")
+
+    plt.show()
+
+
+def gen_md_normal_plot(mean, cov, size):
+
+    samples = np.random.multivariate_normal(mean, cov, size)
+
+    print samples
+
 if __name__ == "__main__":
 
     argument_parser = argparse.ArgumentParser(description="")
@@ -45,33 +87,19 @@ if __name__ == "__main__":
 
     cov = gen_cov(args.cov.split(", "))
 
-    samples = np.random.multivariate_normal(mean, cov, args.size)
+    if len(mean) == 1:
 
-    x, y = samples.T
+        gen_1d_normal_plot(mean, cov, args.size)
 
-    # print samples
-    #
-    # samples = sorted(samples)
-    #
-    # pdf = stats.norm.pdf(samples, mean, cov)
-    #
-    # plt.plot(samples, pdf, "-o")
-    #
-    # plt.show()
+    elif len(mean) == 2:
 
-    rx = np.linspace(np.amin(x), np.amax(x), 200)
-    ry = np.linspace(np.amin(y), np.amax(y), 200)
+        gen_2d_normal_plot(mean, cov, args.size)
 
-    X, Y = np.meshgrid(rx, ry)
+    else:
 
-    Z = bivariate_normal(X, Y)
+        gen_md_normal_plot(mean, cov, args.size)
 
-    figure = plt.figure()
 
-    axes = figure.add_subplot(111, projection='3d')
 
-    axes.plot_surface(X, Y, Z, cmap="binary")
-
-    plt.show()
 
 
